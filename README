@@ -1,0 +1,57 @@
+ldapsmb can be used on Samba servers with LDAP backend to manage users, groups,
+and computers in a LDAP directory. ldapsmb only needs python and python-ldap
+packages to be installed on your system.
+
+There is no support for LM passwords. LM passwords are used by Windows 95/98.
+Windows clients starting from NT4 to current versions do not use LM passwords.
+
+--- Installation
+
+Make sure python and python-ldap packages are installed
+
+SUSE: 
+# zypper install python python-ldap
+Redhat:
+# yum install python python-ldap
+Debian:
+# apt-get install python-ldap
+
+Copy ldapsmb and ldapsmb.conf on Samba server:
+
+# cp ldapsmb /etc/samba/ldapsmb 
+# cp ldapsmb.conf /etc/samba/ldapsmb.conf
+
+Edit ldapsmb.conf for your LDAP server. Be careful not to use any tabs in 
+front of the paramters.
+
+/etc/samba/ldapsmb.conf:
+
+[ldap]
+uri    = ldap://ldap.b1-systems.de
+port   = 389
+binddn = cn=admin,dc=b1-systems,dc=de
+passwd = setme
+
+usetls = true
+# the following certificates and keys do not have to
+# exist, to use TLS
+cacert="/etc/samba/ca.pem"
+key="/etc/samba/client.key"
+cert="/etc/samba/client.pem"
+
+[samba]
+ldap suffix         = dc=b1-systems,dc=de
+ldap user suffix    = dc=users
+ldap group suffix   = dc=groups
+ldap machine suffix = dc=computers
+ldap idmap suffix   = sambaDomainName=B1SYSTEMS
+
+sambaDomain = B1SYSTEMS
+
+# command on Samba server: net getlocalsid
+SID = S-1-5-21-805784280-605006872-4261867961
+
+sambaProfilePath = \\PDC\profiles
+sambaHomePath = \\PDC
+sambaHomeDrive = H:
+
